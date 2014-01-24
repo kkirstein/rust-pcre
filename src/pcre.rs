@@ -99,9 +99,9 @@ pub enum PcreOptions {
 
 pub enum PcreMatch {
 	NoMatch,
-	TooManyMatches,
+	MoreMatches(i32, ~[i32]),
 	Error(i32),
-	Match(i32)
+	Match(i32, ~[i32])
 }
 
 // low-level (unsafe) functions
@@ -233,16 +233,18 @@ pub fn study(pcre_comp: *PcreCompiled, options: PcreOptions) -> Option<*PcreExtr
 pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, start_offset: int, options: PcreOptions, match_count: uint) -> PcreMatch {
 	unsafe {
 		let subject_len = subject.len() as c_int;
-		let mut offsets: ~[i32] = vec::with_capacity(3 * (match_count+1));
-		let offset_count = offsets.len();
+		let offset_count = 3 * (match_count+1);
+		let mut offsets: ~[i32] = vec::with_capacity(offset_count);
 		let result = subject.with_c_str( |sub| pcre_exec(pcre_comp, pcre_extra, sub, subject_len, start_offset as c_int, options as c_int, offsets.as_mut_ptr(), offset_count as c_int) );
 
-		// TODO: error & result handling
+		// error & result handling
+		//offsets.set_len(offset_count);
+		//println!("result: {:d}; offset_count: {:u}; offsets: {:?}", result, offset_count, offsets);
 		match result {
 			-1			=> NoMatch,
-			0			=> TooManyMatches,
+			0			=> { offsets.set_len(offset_count); MoreMatches(0, offsets) },
 			r if r < -1	=> Error(r),
-			r if r > 0	=> Match(r),
+			r if r > 0	=> { offsets.set_len(3*result as uint); Match(r, offsets) },
 			_			=> Error(0)	// this shouldn't happen...
 		}
 	}
