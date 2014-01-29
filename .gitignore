@@ -2,8 +2,11 @@
 ## Rust stuff
 #############
 
-# generated exe
+# generated files
+.rust
+build
 *.exe
+*.dll
 
 #############
 ## Tools, e.g. vim backup files

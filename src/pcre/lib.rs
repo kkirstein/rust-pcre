@@ -10,6 +10,10 @@
 
 #[crate_id = "pcre#0.1"];
 #[crate_type = "dylib"];
+#[desc = "Rust bindings to PCRE regular expression library (http://www.pcre.org)"];
+#[license = "BSD"];
+
+#[allow(dead_code)];
 
 use std::libc::{c_void, c_char, c_int};
 use std::str::raw::from_c_str;
@@ -194,7 +198,7 @@ pub fn free_extra(pcre: *PcreExtra) -> () {
 // low-level (unsafe) functions
 // ============================
 //#[link(name = "pcre")]
-#[link(name = "cpcre", kind = "static")]
+#[link(name = "pcre", kind = "static")]
 extern {
 
 	fn pcre_compile(pattern: *c_char, options: c_int,
