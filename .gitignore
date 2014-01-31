@@ -5,6 +5,8 @@
 # generated files
 .rust
 build
+*.o
+*.a
 *.exe
 *.dll
 
