@@ -56,7 +56,7 @@ pub struct PcreExtra {
 			   executable_jit: *c_void     /* Contains a pointer to a compiled jit code */
 }
 
-pub enum PcreOptions {
+pub enum PcreOption {
 	PCRE_NONE				= 0x00000000,
 	PCRE_CASELESS           = 0x00000001,  /* C1       */
 	PCRE_MULTILINE          = 0x00000002,  /* C1       */
@@ -70,36 +70,44 @@ pub enum PcreOptions {
 	PCRE_UNGREEDY           = 0x00000200,  /* C1       */
 	PCRE_NOTEMPTY           = 0x00000400,  /*    E D J */
 	PCRE_UTF8               = 0x00000800,  /* C4        )          */
-//PCRE_UTF16              = 0x00000800,  /* C4        ) Synonyms */
-//PCRE_UTF32              = 0x00000800,  /* C4        )          */
-PCRE_NO_AUTO_CAPTURE    = 0x00001000,  /* C1       */
-PCRE_NO_UTF8_CHECK      = 0x00002000,  /* C1 E D J  )          */
-//PCRE_NO_UTF16_CHECK     = 0x00002000,  /* C1 E D J  ) Synonyms */
-//PCRE_NO_UTF32_CHECK     = 0x00002000,  /* C1 E D J  )          */
-PCRE_AUTO_CALLOUT       = 0x00004000,  /* C1       */
-//PCRE_PARTIAL_SOFT       = 0x00008000,  /*    E D J  ) Synonyms */
-PCRE_PARTIAL            = 0x00008000,  /*    E D J  )          */
+	//PCRE_UTF16              = 0x00000800,  /* C4        ) Synonyms */
+	//PCRE_UTF32              = 0x00000800,  /* C4        )          */
+	PCRE_NO_AUTO_CAPTURE    = 0x00001000,  /* C1       */
+	PCRE_NO_UTF8_CHECK      = 0x00002000,  /* C1 E D J  )          */
+	//PCRE_NO_UTF16_CHECK     = 0x00002000,  /* C1 E D J  ) Synonyms */
+	//PCRE_NO_UTF32_CHECK     = 0x00002000,  /* C1 E D J  )          */
+	PCRE_AUTO_CALLOUT       = 0x00004000,  /* C1       */
+	//PCRE_PARTIAL_SOFT       = 0x00008000,  /*    E D J  ) Synonyms */
+	PCRE_PARTIAL            = 0x00008000,  /*    E D J  )          */
+	
+	/* This pair use the same bit. */
+	PCRE_NEVER_UTF          = 0x00010000,  /* C1        ) Overlaid */
+	//PCRE_DFA_SHORTEST       = 0x00010000,  /*      D    ) Overlaid */
+	
+	PCRE_DFA_RESTART        = 0x00020000,  /*      D   */
+	PCRE_FIRSTLINE          = 0x00040000,  /* C3       */
+	PCRE_DUPNAMES           = 0x00080000,  /* C1       */
+	PCRE_NEWLINE_CR         = 0x00100000,  /* C3 E D   */
+	PCRE_NEWLINE_LF         = 0x00200000,  /* C3 E D   */
+	PCRE_NEWLINE_CRLF       = 0x00300000,  /* C3 E D   */
+	PCRE_NEWLINE_ANY        = 0x00400000,  /* C3 E D   */
+	PCRE_NEWLINE_ANYCRLF    = 0x00500000,  /* C3 E D   */
+	PCRE_BSR_ANYCRLF        = 0x00800000,  /* C3 E D   */
+	PCRE_BSR_UNICODE        = 0x01000000,  /* C3 E D   */
+	PCRE_JAVASCRIPT_COMPAT  = 0x02000000,  /* C5       */
+	PCRE_NO_START_OPTIMIZE  = 0x04000000,  /* C2 E D    ) Synonyms */
+	//PCRE_NO_START_OPTIMISE  = 0x04000000,  /* C2 E D    )          */
+	PCRE_PARTIAL_HARD       = 0x08000000,  /*    E D J */
+	PCRE_NOTEMPTY_ATSTART   = 0x10000000,  /*    E D J */
+	PCRE_UCP                = 0x20000000  /* C3       */
+}
 
-/* This pair use the same bit. */
-PCRE_NEVER_UTF          = 0x00010000,  /* C1        ) Overlaid */
-//PCRE_DFA_SHORTEST       = 0x00010000,  /*      D    ) Overlaid */
-
-PCRE_DFA_RESTART        = 0x00020000,  /*      D   */
-PCRE_FIRSTLINE          = 0x00040000,  /* C3       */
-PCRE_DUPNAMES           = 0x00080000,  /* C1       */
-PCRE_NEWLINE_CR         = 0x00100000,  /* C3 E D   */
-PCRE_NEWLINE_LF         = 0x00200000,  /* C3 E D   */
-PCRE_NEWLINE_CRLF       = 0x00300000,  /* C3 E D   */
-PCRE_NEWLINE_ANY        = 0x00400000,  /* C3 E D   */
-PCRE_NEWLINE_ANYCRLF    = 0x00500000,  /* C3 E D   */
-PCRE_BSR_ANYCRLF        = 0x00800000,  /* C3 E D   */
-PCRE_BSR_UNICODE        = 0x01000000,  /* C3 E D   */
-PCRE_JAVASCRIPT_COMPAT  = 0x02000000,  /* C5       */
-PCRE_NO_START_OPTIMIZE  = 0x04000000,  /* C2 E D    ) Synonyms */
-//PCRE_NO_START_OPTIMISE  = 0x04000000,  /* C2 E D    )          */
-PCRE_PARTIAL_HARD       = 0x08000000,  /*    E D J */
-PCRE_NOTEMPTY_ATSTART   = 0x10000000,  /*    E D J */
-PCRE_UCP                = 0x20000000  /* C3       */
+pub enum PcreStudyOption {
+	PCRE_STUDY_NONE							= 0x0000,
+	PCRE_STUDY_JIT_COMPILE					= 0x0001,
+	PCRE_STUDY_JIT_PARTIAL_SOFT_COMPILE		= 0x0002,
+	PCRE_STUDY_JIT_PARTIAL_HARD_COMPILE		= 0x0004,
+	PCRE_STUDY_EXTRA_NEEDED					= 0x0008
 }
 
 pub enum PcreMatch {
@@ -113,11 +121,11 @@ pub enum PcreMatch {
 // ==========
 pub fn get_version() ->  ~str {
 	unsafe {
-		from_c_str(pcre_version() as *c_char)
+		from_c_str(pcre_version())
 	}
 }
 
-pub fn compile(pattern: &str, options: PcreOptions) -> Option<*PcreCompiled> {
+pub fn compile(pattern: &str, options: PcreOption) -> Option<*PcreCompiled> {
 	unsafe {
 		let error_str = "".to_c_str();
 		let mut error_offset = 0 as c_int;
@@ -139,7 +147,7 @@ pub fn compile(pattern: &str, options: PcreOptions) -> Option<*PcreCompiled> {
 	}
 }
 
-pub fn study(pcre_comp: *PcreCompiled, options: PcreOptions) -> Option<*PcreExtra> {
+pub fn study(pcre_comp: *PcreCompiled, options: PcreStudyOption) -> Option<*PcreExtra> {
 	unsafe {
 		let error_str = "".to_c_str();
 		let pcre_extra = error_str.with_ref( |buf|
@@ -159,11 +167,15 @@ pub fn study(pcre_comp: *PcreCompiled, options: PcreOptions) -> Option<*PcreExtr
 	}
 }
 
-pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, start_offset: int, options: PcreOptions, match_count: uint) -> PcreMatch {
+pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, start_offset: int, options: PcreOption, match_count: uint) -> PcreMatch {
 	unsafe {
 		let subject_len = subject.len() as c_int;
+
+		// prepare offsets vector
 		let offset_count = 3 * (match_count+1);
 		let mut offsets: ~[i32] = vec::with_capacity(offset_count);
+
+		// call pcre_exec
 		let result = subject.with_c_str( |sub| pcre_exec(pcre_comp, pcre_extra, sub, subject_len, start_offset as c_int, options as c_int, offsets.as_mut_ptr(), offset_count as c_int) );
 
 		// error & result handling
@@ -176,6 +188,33 @@ pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, sta
 			r if r > 0	=> { offsets.set_len(3*result as uint); Match(r, offsets) },
 			_			=> Error(0)	// this shouldn't happen...
 		}
+	}
+}
+
+pub fn get_substring(subject: &str, match_struct: PcreMatch, match_number: uint) -> Option<&str> {
+
+	// call pcre_get_substring
+	unsafe {
+		let buffer = "";
+		//let buffer_raw: *c_char;
+		let result = match match_struct {
+			//Match(count, offsets)		=> { subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &mut buffer_raw) )},
+			Match(count, offsets)		=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &mut buf) ))},
+			MoreMatches(count, offsets)	=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count/3, match_number as i32, &mut buf) ))},
+			NoMatch						=> -7,
+			Error(err)					=> err
+		};
+
+		// return as Rust string
+		if (result >= 0) {
+			Some(buffer)
+		} else {
+			None
+		}
+
+		// free allocated memory and return result
+//		pcre_free_substring(buffer);
+//		substring
 	}
 }
 
@@ -245,23 +284,44 @@ extern {
 					 length: c_int, start_offset: c_int, options: c_int,
 					 offsets: *mut c_int, offset_count: c_int,
 					 stack: *c_void) -> (c_int);
-	fn pcre_free_substring(ptr: *u8) -> ();
-	fn pcre_free_substring_list(ptr: **u8) -> ();
+	fn pcre_free_substring(ptr: *c_char) -> ();
+	fn pcre_free_substring_list(ptr: **c_char) -> ();
 	fn pcre_fullinfo(pcre: *PcreCompiled, pcre_extra: *PcreExtra, what: c_int, where: *c_void) -> (c_int);
 	fn pcre_get_named_substring(code: *PcreCompiled, subject: *u8, ovector: *c_int,
 								string_count: c_int, string_name: *u8, string_ptr: **u8) -> (c_int);
 	fn pcre_get_stringnumber(pcre: *PcreCompiled, string_name: *u8) -> (c_int);
 	fn pcre_get_stringable_entries(pcre: *PcreCompiled, string_name: *u8,
 								   first_ptr: **u8, last_ptr: **u8) -> (c_int);
-	fn pcre_get_substring(subject: *u8, ovector: *c_int,
-						  string_count: c_int, string_number: c_int, string_ptr: **u8) -> (c_int);
-	fn pcre_get_substring_list(subject: *u8, ovector: *c_int,
+
+	/* This function copies a single captured substring into a piece of new
+	store
+	
+	Arguments:
+	  subject        the subject string that was matched
+	  ovector        pointer to the offsets table
+	  stringcount    the number of substrings that were captured
+	                   (i.e. the yield of the pcre_exec call, unless
+	                   that was zero, in which case it should be 1/3
+	                   of the offset table size)
+	  stringnumber   the number of the required substring
+	  stringptr      where to put a pointer to the substring
+	
+	Returns:         if successful:
+	                   the length of the string, not including the zero that
+	                   is put on the end; can be zero
+	                 if not successful:
+	                   PCRE_ERROR_NOMEMORY (-6) failed to get store
+	                   PCRE_ERROR_NOSUBSTRING (-7) substring not present
+	*/
+	fn pcre_get_substring(subject: *c_char, ovector: *c_int,
+						  string_count: c_int, string_number: c_int, string_ptr: *mut *c_char) -> (c_int);
+	fn pcre_get_substring_list(subject: *c_char, ovector: *c_int,
 							   string_count: c_int, list_ptr: ***u8) -> (c_int); // first prio
 	fn pcre_refcount(pcre: *PcreCompiled, adjust: c_int) -> (c_int);
 	fn pcre_study(pcre: *PcreCompiled, options: c_int, error_str: **c_char) -> *PcreExtra; // first prio
 	fn pcre_free(pcre_comp: *PcreCompiled) -> ();
 	fn pcre_free_study(pcre_extra: *PcreExtra) -> ();
-	fn pcre_version() -> *u8;
+	fn pcre_version() -> *c_char;
 
 	// Utility functions for byte order swaps
 	//fn pcre_pattern_to_host_byte_order() -> ();
