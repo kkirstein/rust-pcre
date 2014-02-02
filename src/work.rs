@@ -50,7 +50,7 @@ fn main() {
 	};
 	println!("Matching JIT-compiled regex against '{:s}':", subject);
 	let tic2 = precise_time_ns();
-	let res2 = match (pcre_comp, pcre_extra) {
+	let res2 = match (pcre_comp, pcre_jit) {
 		(Some(pc), Some(pe))	=> ::pcre::exec(pc, pe, subject, 0, ::pcre::PCRE_NONE, 1),
 		_						=> ::pcre::Error(-100)
 	};
@@ -59,13 +59,9 @@ fn main() {
 	println("");
 
 	// free resources
-	match (pcre_comp, pcre_extra) {
-		(Some(pc), Some(pe))	=> { ::pcre::free_compiled(pc); ::pcre::free_extra(pe); },
-		(Some(pc), None)		=> { ::pcre::free_compiled(pc); },
-		(None, Some(pe))		=> { ::pcre::free_extra(pe); },
-		(None, None)			=> {}
-	}
-	match pcre_jit { Some(pj) => ::pcre::free_extra(pj), None => {} };
+	//match pcre_comp { Some(pc) => ::pcre::free_compiled(pc), None => {} };
+	//match pcre_extra { Some(pe) => ::pcre::free_extra(pe), None => {} };
+	//match pcre_jit { Some(pj) => ::pcre::free_extra(pj), None => {} };
 
 }
 
