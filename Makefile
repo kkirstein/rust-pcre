@@ -15,9 +15,6 @@ clibdir = ./src/pcre/C
 rclibflags = --lib -O -L$(clibdir)
 rcbinflags = -O -L.
 
-# include Makefile for pcre lib
-#include ./src/pcre/C/Makefile
-
 # define phony targets
 .PHONY: all lib clean
 
@@ -32,7 +29,7 @@ $(pcre_lib):
 	$(MAKE) -C $(pcre_sourcedir) $@
 
 # bin target
-exe:
+exe: $(binsource)
 	$(rustc) $(rcbinflags) $(outdirflag) $(binsource)
 
 
