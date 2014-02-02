@@ -5,6 +5,7 @@
 
 libsource = ./src/pcre/lib.rs
 binsource = ./src/work.rs
+testsource = ./src/pcre/test.rs
 pcre_sourcedir = ./src/pcre/C
 pcre_lib = libpcre.a
 
@@ -32,6 +33,10 @@ $(pcre_lib):
 exe: $(binsource)
 	$(rustc) $(rcbinflags) $(outdirflag) $(binsource)
 
+# test target
+test: lib $(testsource)
+	$(rustc) --test $(rcbinflags) $(rcoutdirflag) $(testsource)
+	./test
 
 clean:
 	$(MAKE) -C $(pcre_sourcedir) clean
