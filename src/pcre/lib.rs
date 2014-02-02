@@ -121,7 +121,7 @@ pub enum PcreMatch {
 // ==========
 pub fn get_version() ->  ~str {
 	unsafe {
-		from_c_str(pcre_version())
+		from_c_str(pcre_version()) // FIXME: Memory leak?
 	}
 }
 
@@ -198,9 +198,9 @@ pub fn get_substring(subject: &str, match_struct: PcreMatch, match_number: uint)
 		let buffer = "";
 		//let buffer_raw: *c_char;
 		let result = match match_struct {
-			//Match(count, offsets)		=> { subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &mut buffer_raw) )},
-			Match(count, offsets)		=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &mut buf) ))},
-			MoreMatches(count, offsets)	=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count/3, match_number as i32, &mut buf) ))},
+			Match(count, offsets)		=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &buf) ))},
+			//Match(count, offsets)		=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &mut buf) ))},
+			MoreMatches(count, offsets)	=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count/3, match_number as i32, &buf) ))},
 			NoMatch						=> -7,
 			Error(err)					=> err
 		};
@@ -314,7 +314,7 @@ extern {
 	                   PCRE_ERROR_NOSUBSTRING (-7) substring not present
 	*/
 	fn pcre_get_substring(subject: *c_char, ovector: *c_int,
-						  string_count: c_int, string_number: c_int, string_ptr: *mut *c_char) -> (c_int);
+						  string_count: c_int, string_number: c_int, string_ptr: **c_char) -> (c_int);
 	fn pcre_get_substring_list(subject: *c_char, ovector: *c_int,
 							   string_count: c_int, list_ptr: ***u8) -> (c_int); // first prio
 	fn pcre_refcount(pcre: *PcreCompiled, adjust: c_int) -> (c_int);
