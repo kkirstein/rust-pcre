@@ -55,7 +55,8 @@ fn main() {
 		_						=> ::pcre::Error(-100)
 	};
 	let toc2 = precise_time_ns();
-	println!("Match result: {:?}. Elapsed time {:u}us", res2, (toc2-tic2)/1000);
+	let match_string = ::pcre::get_substring(subject, res2, 0);
+	println!("Match result: {:?}. Elapsed time {:u}us", match_string, (toc2-tic2)/1000);
 	println("");
 
 	// free resources
