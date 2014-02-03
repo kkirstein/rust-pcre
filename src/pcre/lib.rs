@@ -191,50 +191,21 @@ pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, sta
 	}
 }
 
-pub fn get_substring(subject: &str, match_struct: PcreMatch, match_number: uint) -> Option<&str> {
+pub fn get_substring(subject: &str, match_struct: PcreMatch, match_number: uint) -> Option<~str> {
 
-	let substring = match match_struct {
-		Match(count, offsets)		=> {
-			let start: uint = offsets[2*count] as uint;
-			let end: uint = offsets[2*count+1] as uint;
-			subject.slice(start, end)
+	// TODO: check index bounds!
+	
+	let start_index: uint = 2 * match_number;
+	let end_index: uint = 2 * match_number + 1;
+	match match_struct {
+		Match(count, offsets) | MoreMatches(count, offsets)	=> {
+			let start: uint = offsets[start_index] as uint;
+			let end: uint = offsets[end_index] as uint;
+			Some(subject.slice(start, end).to_owned())
 		},
-		MoreMatches(count, offsets)	=> {
-			let start: uint = offsets[2*count] as uint;
-			let end: uint = offsets[2*count+1] as uint;
-			subject.slice(start, end)
-		},
-		NoMatch						=> "",
-		Error(err)					=> ""
-	};
-
-	Some(substring)
+		_						=> None
+	}
 }
-
-	// call pcre_get_substring
-//	unsafe {
-//		let buffer = "";
-//		//let buffer_raw: *c_char;
-//		let result = match match_struct {
-//			Match(count, offsets)		=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &buf) ))},
-//			//Match(count, offsets)		=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count, match_number as i32, &mut buf) ))},
-//			MoreMatches(count, offsets)	=> { buffer.with_c_str( |buf| subject.with_c_str( |sub| pcre_get_substring( sub, offsets.as_ptr(), count/3, match_number as i32, &buf) ))},
-//			NoMatch						=> -7,
-//			Error(err)					=> err
-//		};
-//
-//		// return as Rust string
-//		if (result >= 0) {
-//			Some(buffer)
-//		} else {
-//			None
-//		}
-//
-//		// free allocated memory and return result
-//		pcre_free_substring(buffer);
-//		substring
-//	}
-//}
 
 pub fn free_compiled(pcre: *PcreCompiled) -> () {
 	unsafe {
