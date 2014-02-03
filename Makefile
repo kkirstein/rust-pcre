@@ -35,7 +35,7 @@ exe: $(binsource)
 
 # test target
 test: lib $(testsource)
-	$(rustc) --test $(rcbinflags) $(rcoutdirflag) $(testsource)
+	$(rustc) --test $(rcbinflags) $(outdirflag) $(testsource)
 	./test
 
 clean:
