@@ -198,7 +198,7 @@ pub fn get_substring(subject: &str, match_struct: PcreMatch, match_number: uint)
 	let start_index: uint = 2 * match_number;
 	let end_index: uint = 2 * match_number + 1;
 	match match_struct {
-		Match(count, offsets) | MoreMatches(count, offsets)	=> {
+		Match(_, offsets) | MoreMatches(_, offsets)	=> {
 			let start: uint = offsets[start_index] as uint;
 			let end: uint = offsets[end_index] as uint;
 			Some(subject.slice(start, end).to_owned())
