@@ -191,14 +191,14 @@ pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, sta
 	}
 }
 
-pub fn get_substring(subject: &str, match_struct: PcreMatch, match_number: uint) -> Option<~str> {
+pub fn get_substring(subject: &str, match_struct: &PcreMatch, match_number: uint) -> Option<~str> {
 
 	// TODO: check index bounds!
 	
 	let start_index: uint = 2 * match_number;
 	let end_index: uint = 2 * match_number + 1;
 	match match_struct {
-		Match(_, offsets) | MoreMatches(_, offsets)	=> {
+		&Match(_, ref offsets) | &MoreMatches(_, ref offsets)	=> {
 			let start: uint = offsets[start_index] as uint;
 			let end: uint = offsets[end_index] as uint;
 			Some(subject.slice(start, end).to_owned())
