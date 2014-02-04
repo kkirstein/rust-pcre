@@ -40,7 +40,11 @@ test: lib $(testsource)
 
 clean:
 	$(MAKE) -C $(pcre_sourcedir) clean
+
+realclean: clean
+	$(MAKE) -C $(pcre_sourcedir) realclean
 	$(RM) *.dll
 	$(RM) *.exe
+	$(RM) test work
 
 

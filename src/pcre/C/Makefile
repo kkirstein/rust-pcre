@@ -36,9 +36,9 @@ $(pcre_lib): $(pcre_objs)
 
 
 # clean target
-pcre_clean:
+clean:
 	$(RM) *.o
-	$(RM) $(pcre_lib)
 
-clean: pcre_clean
+realclean: clean
+	$(RM) $(pcre_lib)
 
