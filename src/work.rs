@@ -39,7 +39,7 @@ fn main() {
 		_						=> ::pcre::Error(-100)
 	};
 	let toc1 = precise_time_ns();
-	let match_string = ::pcre::get_substring(subject, res1, 0);
+	let match_string = ::pcre::get_substring(subject, &res1, 0);
 	println!("Match result: {:?}. Elapsed time {:u}us", match_string, (toc1-tic1)/1000);
 	println("");
 	
@@ -55,7 +55,7 @@ fn main() {
 		_						=> ::pcre::Error(-100)
 	};
 	let toc2 = precise_time_ns();
-	let match_string = ::pcre::get_substring(subject, res2, 0);
+	let match_string = ::pcre::get_substring(subject, &res2, 0);
 	println!("Match result: {:?}. Elapsed time {:u}us", match_string, (toc2-tic2)/1000);
 	println("");
 
