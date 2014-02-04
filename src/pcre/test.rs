@@ -11,7 +11,7 @@
 #[license = "BSD"];
 
 extern mod pcre;
-use pcre::{compile, study};
+use pcre::{compile, study, exec, get_substring};
 
 // test compilation of regex
 #[test]
@@ -46,5 +46,70 @@ fn test_raw_study_jit() {
 	assert!(pcre_extra != None);
 }
 
+// test some basic matching cases
+#[test]
+fn test_raw_match () {
+	let regex = match compile("cat", pcre::PCRE_NONE) { Some(r) => r, None => { assert!(false); return }};
+	let subject = "dog and cat";
+	let mm = exec(regex, std::ptr::null(), subject, 0, pcre::PCRE_NONE, 1);
+	let substring = match get_substring(subject, &mm, 0) {
+		Some(s)	=> s,
+		None	=> { assert!(false); return }
+	};
+	assert!(match mm { pcre::Match(_,_) => true, _ => false });
+	assert_eq!(~"cat", substring);
+
+	let subject = "catch";
+	let mm = exec(regex, std::ptr::null(), subject, 0, pcre::PCRE_NONE, 1);
+	let substring = match get_substring(subject, &mm, 0) {
+		Some(s)	=> s,
+		None	=> { assert!(false); return }
+	};
+	assert!(match mm { pcre::Match(_,_) => true, _ => false });
+	assert_eq!(~"cat", substring);
+}
+
+#[test]
+fn test_raw_unmatch () {
+	let regex = match compile("cat", pcre::PCRE_NONE) { Some(r) => r, None => { assert!(false); return }};
+	let subject = "dog and bird";
+	let mm = exec(regex, std::ptr::null(), subject, 0, pcre::PCRE_NONE, 1);
+
+	assert!(match mm { pcre::NoMatch => true, _ => false });
+}
+
+// test JIT based regex matching
+#[test]
+fn test_jit_match () {
+	let regex = match compile("cat", pcre::PCRE_NONE) { Some(r) => r, None => { assert!(false); return }};
+	let extra = match study(regex, pcre::PCRE_STUDY_JIT_COMPILE) { Some(e) => e, None => { assert!(false); return }};
+	let subject = "dog and cat";
+	let mm = exec(regex, extra, subject, 0, pcre::PCRE_NONE, 1);
+	let substring = match get_substring(subject, &mm, 0) {
+		Some(s)	=> s,
+		None	=> { assert!(false); return }
+	};
+	assert!(match mm { pcre::Match(_,_) => true, _ => false });
+	assert_eq!(~"cat", substring);
+
+	let subject = "catch";
+	let mm = exec(regex, extra, subject, 0, pcre::PCRE_NONE, 1);
+	let substring = match get_substring(subject, &mm, 0) {
+		Some(s)	=> s,
+		None	=> { assert!(false); return }
+	};
+	assert!(match mm { pcre::Match(_,_) => true, _ => false });
+	assert_eq!(~"cat", substring);
+}
+
+#[test]
+fn test_jit_unmatch () {
+	let regex = match compile("cat", pcre::PCRE_NONE) { Some(r) => r, None => { assert!(false); return }};
+	let extra = match study(regex, pcre::PCRE_STUDY_JIT_COMPILE) { Some(e) => e, None => { assert!(false); return }};
+	let subject = "dog and bird";
+	let mm = exec(regex, extra, subject, 0, pcre::PCRE_NONE, 1);
+
+	assert!(match mm { pcre::NoMatch => true, _ => false });
+}
 
 
