@@ -15,6 +15,7 @@ build
 #############
 *~
 *.swp
+tags
 
 #############
 ## Windows detritus
