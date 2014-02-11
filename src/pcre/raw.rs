@@ -10,50 +10,15 @@
 
 //#[allow(dead_code)];
 
-use std::libc::{c_void, c_char, c_int};
+use std::libc::{c_char, c_int};
 use std::str::raw::from_c_str;
 use std::ptr::is_not_null;
 use std::vec;
 
 // type definitions for pcre interface
 // ===================================
-//pub enum PcreCompiled { } // opaque handle
-pub struct PcreCompiled {
-	// TODO: wrap as empty enum { }
-	magic_number: u32,
-	size: u32,              /* Total that was malloced */
-	options: u32,           /* Public options */
-	flags: u32,             /* Private flags */
-	limit_match: u32,       /* Limit set from regex */
-	limit_recursion: u32,   /* Limit set from regex */
-	first_char: u16,        /* Starting character */
-	req_char: u16,          /* This character must be seen */
-	max_lookbehind: u16,    /* Longest lookbehind (characters) */
-	top_bracket: u16,       /* Highest numbered group */
-	top_backref: u16,       /* Highest numbered back reference */
-	name_table_offset: u16, /* Offset to name table that follows */
-	name_entry_size: u16,   /* Size of any name items */
-	name_count: u16,        /* Number of name items */
-	ref_count: u16,         /* Reference count */
-	dummy1: u16,            /* To ensure size is a multiple of 8 */
-	dummy2: u16,            /* To ensure size is a multiple of 8 */
-	dummy3: u16,            /* To ensure size is a multiple of 8 */
-	tables: *u8,            /* Pointer to tables or NULL for std */
-	nullpad: *c_void   	    /* NULL padding */
-}
-
-//pub enum PcreExtra { } // opaque handle
-pub struct PcreExtra {
-	// TODO: wrap as empty enum { }
-	flags: u32,        			/* Bits for which fields are set */
-			   study_data: *c_void,    	/* Opaque data from pcre_study() */
-			   match_limit: u32,  			/* Maximum number of calls to match() */
-			   callout_data: *c_void,  	/* Data passed back in callouts */
-			   tables: *u8,    			/* Pointer to character tables */
-			   match_limit_recursion: u32,	/* Max recursive calls to match() */
-			   mark: **u8,           		/* For passing back a mark pointer */
-			   executable_jit: *c_void     /* Contains a pointer to a compiled jit code */
-}
+pub enum PcreCompiled { } // opaque handle
+pub enum PcreExtra { } // opaque handle
 
 // option enums for pcre interface
 // ===============================
