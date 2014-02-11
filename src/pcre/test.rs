@@ -96,6 +96,21 @@ fn test_raw_match_groups() {
 }
 
 #[test]
+fn test_raw_match_groups_out_of_bound() {
+	use pcre::raw::{compile, exec, get_substring, PCRE_NONE};
+
+	let subject = "00:06:08 TAG_1      id=   3,   320,     1,  -321,    11, TAG_END ";
+	let pattern = "TAG_1[\\s]+id=[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*TAG_END";
+	let regex = match compile(pattern, PCRE_NONE) { Some(r) => r, None => fail!() };
+	let mm = exec(regex, std::ptr::null(), subject, 0, PCRE_NONE, 5);
+	
+	match get_substring(subject, &mm, 7) {
+		Some(s)	=> assert_eq!(~"", s),
+		None	=> fail!()
+	}
+}
+
+#[test]
 fn test_raw_unmatch () {
 	use pcre::raw::{compile, exec, PCRE_NONE, NoMatch};
 
