@@ -17,6 +17,7 @@ use std::vec;
 
 // type definitions for pcre interface
 // ===================================
+//pub enum PcreCompiled { } // opaque handle
 pub struct PcreCompiled {
 	// TODO: wrap as empty enum { }
 	magic_number: u32,
@@ -41,6 +42,7 @@ pub struct PcreCompiled {
 	nullpad: *c_void   	    /* NULL padding */
 }
 
+//pub enum PcreExtra { } // opaque handle
 pub struct PcreExtra {
 	// TODO: wrap as empty enum { }
 	flags: u32,        			/* Bits for which fields are set */
@@ -192,10 +194,19 @@ pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, sta
 
 pub fn get_substring(subject: &str, match_struct: &PcreMatch, match_number: uint) -> Option<~str> {
 
-	// TODO: check index bounds!
-	
-	let start_index: uint = 2 * match_number;
-	let end_index: uint = 2 * match_number + 1;
+	// check number of matches
+	let found_matches = match match_struct {
+		&MoreMatches(_, ref vec)	=> vec.len()/3,
+		&Match(n, _)				=> n as uint,
+		_							=> 0
+	};
+	let (start_index, end_index) = if (match_number > found_matches) {
+		(0, 0)
+	} else {
+		(2 * match_number, 2 * match_number + 1)
+	};
+
+	// extract substring indices
 	match match_struct {
 		&Match(_, ref offsets) | &MoreMatches(_, ref offsets)	=> {
 			let start: uint = offsets[start_index] as uint;
@@ -222,8 +233,8 @@ pub fn free_extra(pcre: *PcreExtra) -> () {
 	}
 }
 
-// low-level (unsafe) functions
-// ============================
+// pcre-API (unsafe) functions
+// ===========================
 //#[link(name = "pcre")]
 #[link(name = "pcre", kind = "static")]
 extern {
