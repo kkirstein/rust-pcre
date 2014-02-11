@@ -22,3 +22,46 @@
 // low-level functions and structs are the raw module
 pub mod raw;
 
+// options for constructing regex
+pub enum Option {
+	NoJIT = 0x0004
+}
+pub struct Options(uint);
+impl Options {
+	fn new(opts: ~[Option]) -> Options {
+		Options(opts.iter().fold(0, |a, &b| a as uint | b as uint))
+	}
+
+	fn to_uint(&self) -> uint {
+		let Options(val) = *self;
+		val
+	}
+}
+
+// basic struct for regex
+pub struct Regex(*raw::PcreCompiled, *raw::PcreExtra);
+
+// methods for Regex
+impl Regex {
+	fn new(pattern: &str, options: Options) -> Regex
+	{
+		// TODO: call raw::compile & raw::study
+		Regex(::std::ptr::null(), ::std::ptr::null())
+	}
+
+	// TODO: match(&self) -> Match
+}
+
+// struct for match results
+pub struct Match {
+
+	// this is an owned copy for easy access to matching substrings
+	subject: ~str,
+
+	// the number of matched groups
+	num_matches: uint,
+	
+	// the vector of substring indices is kept private
+	priv index_matches: ~[uint]
+}
+

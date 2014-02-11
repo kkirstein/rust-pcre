@@ -11,7 +11,33 @@
 #[license = "BSD"];
 
 extern mod pcre;
-//use pcre::{compile, study, exec, get_substring};
+
+// tests for high-level API
+// ========================
+#[test]
+#[ignore]
+fn test_new_options() {
+	use pcre::{Option, Options};
+
+	let opts = Options::new(~[]);
+	//assert_eq!(opts, Options(0));
+	assert_eq!(0, opts.to_uint());
+}
+
+#[test]
+#[ignore]
+fn test_new_regex() {
+	fail!();
+}
+
+#[test]
+#[ignore]
+fn test_new_match() {
+	fail!();
+}
+
+// tests for low-level (raw) API
+// =============================
 
 // test compilation of regex
 #[test]
