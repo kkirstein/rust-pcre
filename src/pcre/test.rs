@@ -29,9 +29,19 @@ fn test_new_flags() {
 }
 
 #[test]
-#[ignore]
 fn test_new_regex() {
-	fail!();
+	use pcre::{Flags, NoJIT, Regex};
+
+	let pat = "cat";
+	let regex = Regex::new(pat, Flags::new(~[]));
+	let Regex(comp, extra) = regex;
+	assert!(::std::ptr::null() != comp);
+	assert!(::std::ptr::null() != extra);
+
+	let regex = Regex::new(pat, Flags::new(~[NoJIT]));
+	let Regex(comp, extra) = regex;
+	assert!(::std::ptr::null() != comp);
+	assert!(::std::ptr::null() == extra);
 }
 
 #[test]

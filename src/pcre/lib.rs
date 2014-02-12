@@ -47,8 +47,22 @@ pub struct Regex(*raw::PcreCompiled, *raw::PcreExtra);
 impl Regex {
 	pub fn new(pattern: &str, options:  Flags) -> Regex
 	{
-		// TODO: call raw::compile & raw::study
-		Regex(::std::ptr::null(), ::std::ptr::null())
+		let Flags(opts) = options;
+
+		let comp = match raw::compile(pattern, raw::PCRE_NONE) {
+			Some(c)	=> c,
+			None	=> ::std::ptr::null()
+		};
+		let extra = if (opts & NoJIT as uint == 0) {
+			match raw::study(comp, raw::PCRE_STUDY_JIT_COMPILE) {
+				Some(e)	=> e,
+				None	=> ::std::ptr::null()
+			}
+		} else {
+			::std::ptr::null()
+		};
+
+		Regex(comp, extra)
 	}
 
 	// TODO: match(&self) -> Match
