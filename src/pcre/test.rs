@@ -15,13 +15,17 @@ extern mod pcre;
 // tests for high-level API
 // ========================
 #[test]
-#[ignore]
-fn test_new_options() {
-	use pcre::{Option, Options};
+fn test_new_flags() {
+	use pcre::{CaseInsensitive, Multiline, NoJIT, Flags};
 
-	let opts = Options::new(~[]);
-	//assert_eq!(opts, Options(0));
+	let opts = Flags::new(~[]);
 	assert_eq!(0, opts.to_uint());
+	let opts = Flags::new(~[CaseInsensitive]);
+	assert_eq!(1, opts.to_uint());
+	let opts = Flags::new(~[CaseInsensitive, NoJIT]);
+	assert_eq!(5, opts.to_uint());
+	let opts = Flags::new(~[CaseInsensitive, NoJIT, Multiline]);
+	assert_eq!(7, opts.to_uint());
 }
 
 #[test]

@@ -23,17 +23,19 @@
 pub mod raw;
 
 // options for constructing regex
-pub enum Option {
-	NoJIT = 0x0004
+pub enum Flag {
+	CaseInsensitive = 0x0001,
+	Multiline		= 0x0002,
+	NoJIT 			= 0x0004
 }
-pub struct Options(uint);
-impl Options {
-	fn new(opts: ~[Option]) -> Options {
-		Options(opts.iter().fold(0, |a, &b| a as uint | b as uint))
+pub struct Flags(uint);
+impl Flags {
+	pub fn new(opts: ~[Flag]) -> Flags {
+		Flags(opts.iter().fold(0, |a, &b| a as uint | b as uint))
 	}
 
-	fn to_uint(&self) -> uint {
-		let Options(val) = *self;
+	pub fn to_uint(&self) -> uint {
+		let Flags(val) = *self;
 		val
 	}
 }
@@ -43,7 +45,7 @@ pub struct Regex(*raw::PcreCompiled, *raw::PcreExtra);
 
 // methods for Regex
 impl Regex {
-	fn new(pattern: &str, options: Options) -> Regex
+	pub fn new(pattern: &str, options:  Flags) -> Regex
 	{
 		// TODO: call raw::compile & raw::study
 		Regex(::std::ptr::null(), ::std::ptr::null())
