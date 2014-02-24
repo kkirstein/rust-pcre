@@ -10,35 +10,44 @@
 
 #[license = "BSD"];
 
+extern mod extra;
 extern mod pcre;
 
 // tests for high-level API
 // ========================
 #[test]
 fn test_new_flags() {
-	use pcre::{CaseInsensitive, Multiline, NoJIT, Flags};
+	use pcre::{CaseInsensitive, Multiline, NoJIT, Flag};
+	use extra::enum_set::EnumSet;
 
-	let opts = Flags::new(~[]);
-	assert_eq!(0, opts.to_uint());
-	let opts = Flags::new(~[CaseInsensitive]);
-	assert_eq!(1, opts.to_uint());
-	let opts = Flags::new(~[CaseInsensitive, NoJIT]);
-	assert_eq!(5, opts.to_uint());
-	let opts = Flags::new(~[CaseInsensitive, NoJIT, Multiline]);
-	assert_eq!(7, opts.to_uint());
+	let mut opts: EnumSet<Flag> = EnumSet::empty();
+	assert!(opts.is_empty());
+
+	opts.add(CaseInsensitive);
+	assert!(opts.contains_elem(CaseInsensitive));
+
+	opts.add(NoJIT);
+	assert!(opts.contains_elem(NoJIT) & opts.contains_elem(CaseInsensitive));
+
+	opts.add(Multiline);
+	assert!(opts.contains_elem(NoJIT) & opts.contains_elem(CaseInsensitive)
+		   & opts.contains_elem(Multiline));
 }
 
 #[test]
 fn test_new_regex() {
-	use pcre::{Flags, NoJIT, Regex};
+	use pcre::{Flag, NoJIT, Regex};
+	use extra::enum_set::EnumSet;
 
 	let pat = "cat";
-	let regex = Regex::new(pat, Flags::new(~[]));
+	let regex = Regex::new(pat, EnumSet::empty());
 	let Regex(comp, extra) = regex;
 	assert!(::std::ptr::null() != comp);
 	assert!(::std::ptr::null() != extra);
 
-	let regex = Regex::new(pat, Flags::new(~[NoJIT]));
+	let mut opts:EnumSet<Flag> = EnumSet::empty();
+	opts.add(NoJIT);
+	let regex = Regex::new(pat, opts);
 	let Regex(comp, extra) = regex;
 	assert!(::std::ptr::null() != comp);
 	assert!(::std::ptr::null() == extra);

@@ -13,6 +13,9 @@
 #[desc = "Rust bindings to PCRE regular expression library (http://www.pcre.org)"];
 #[license = "BSD"];
 
+extern mod extra;
+
+use extra::enum_set::{EnumSet, CLike};
 //use raw;
 //use std::libc::{c_void, c_char, c_int};
 //use std::str::raw::from_c_str;
@@ -24,19 +27,23 @@ pub mod raw;
 
 // options for constructing regex
 pub enum Flag {
+	NoFlag			= 0x0000,
 	CaseInsensitive = 0x0001,
 	Multiline		= 0x0002,
 	NoJIT 			= 0x0004
 }
-pub struct Flags(uint);
-impl Flags {
-	pub fn new(opts: ~[Flag]) -> Flags {
-		Flags(opts.iter().fold(0, |a, &b| a as uint | b as uint))
+impl CLike for Flag {
+	fn to_uint(&self) -> uint {
+		*self as uint
 	}
 
-	pub fn to_uint(&self) -> uint {
-		let Flags(val) = *self;
-		val
+	fn from_uint(val: uint) -> Flag {
+		match val {
+			1	=> CaseInsensitive,
+			2	=> Multiline,
+			4	=> NoJIT,
+			_	=> NoFlag
+		}
 	}
 }
 
@@ -45,15 +52,15 @@ pub struct Regex(*raw::PcreCompiled, *raw::PcreExtra);
 
 // methods for Regex
 impl Regex {
-	pub fn new(pattern: &str, options:  Flags) -> Regex
+	pub fn new(pattern: &str, options: EnumSet<Flag>) -> Regex
 	{
-		let Flags(opts) = options;
+		//let Flags(opts) = options;
 
 		let comp = match raw::compile(pattern, raw::PCRE_NONE) {
 			Some(c)	=> c,
 			None	=> ::std::ptr::null()
 		};
-		let extra = if (opts & NoJIT as uint == 0) {
+		let extra = if (!options.contains_elem(NoJIT)) {
 			match raw::study(comp, raw::PCRE_STUDY_JIT_COMPILE) {
 				Some(e)	=> e,
 				None	=> ::std::ptr::null()
