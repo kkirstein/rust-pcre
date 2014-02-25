@@ -78,24 +78,12 @@ impl Regex {
 		let &Regex(comp, extra) = self;
 		
 		let res = raw::exec(comp, extra, subject, 0, raw::PCRE_NONE, match_count);
-		let (num_match, ind_match) = match res {
-			raw::Match(num, vec)		=> (num as uint, vec),
-			raw::MoreMatches(_, vec)	=> (vec.len()/3, vec),
-			raw::NoMatch				=> return Match {
-											status: Nomatch,
-											subject: ~"",
-											num_matches: 0u,
-											index_matches: ~[] },
-			raw::Error(n)				=> return Match {
-											status: Error,
-											subject: format!("Error code: {:i}", n),
-											num_matches: 0u,
-											index_matches: ~[] },
-			//_						=> return Match { subject: ~"", num_matches: 0, index_matches: ~[] }
-		};
-
-
-		Match { status: Success, subject: subject.to_owned(), num_matches: num_match, index_matches: ind_match }
+		match res {
+			raw::Match(num, vec)		=> Match { status: Success, subject: subject.to_owned(), num_matches: num as uint, index_matches: vec },
+			raw::MoreMatches(_, vec)	=> Match { status: Success, subject: subject.to_owned(), num_matches: vec.len()/3, index_matches: vec },
+			raw::NoMatch				=> Match { status: Nomatch, subject: ~"", num_matches: 0u, index_matches: ~[] },
+			raw::Error(n)				=> Match { status: Error, subject: format!("Error code: {:i}", n), num_matches: 0u, index_matches: ~[] }
+		}
 	}
 }
 
