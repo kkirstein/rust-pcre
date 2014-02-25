@@ -101,16 +101,16 @@ impl Regex {
 
 // struct for match results
 pub enum MatchStatus {
-	Success = 0,
-	Nomatch = 1,
-	Error	= 2
+	Success,
+	Nomatch,
+	Error
 }
+// implement Eq trait for easy status comparison
 impl Eq for MatchStatus {
 	fn eq(&self, other: &MatchStatus) -> bool { (*self as int) == (*other as int) }
 }
 
 pub struct Match {
-
 	// status of match operation
 	status: MatchStatus,
 
