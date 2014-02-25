@@ -72,11 +72,47 @@ impl Regex {
 		Regex(comp, extra)
 	}
 
-	// TODO: match(&self) -> Match
+	// exec(&self) -> Match
+	pub fn exec(&self, subject: &str, match_count: uint) -> Match {
+
+		let &Regex(comp, extra) = self;
+		
+		let res = raw::exec(comp, extra, subject, 0, raw::PCRE_NONE, match_count);
+		let (num_match, ind_match) = match res {
+			raw::Match(num, vec)		=> (num as uint, vec),
+			raw::MoreMatches(_, vec)	=> (vec.len()/3, vec),
+			raw::NoMatch				=> return Match {
+											status: Nomatch,
+											subject: ~"",
+											num_matches: 0u,
+											index_matches: ~[] },
+			raw::Error(n)				=> return Match {
+											status: Error,
+											subject: format!("Error code: {:i}", n),
+											num_matches: 0u,
+											index_matches: ~[] },
+			//_						=> return Match { subject: ~"", num_matches: 0, index_matches: ~[] }
+		};
+
+
+		Match { status: Success, subject: subject.to_owned(), num_matches: num_match, index_matches: ind_match }
+	}
 }
 
 // struct for match results
+pub enum MatchStatus {
+	Success = 0,
+	Nomatch = 1,
+	Error	= 2
+}
+impl Eq for MatchStatus {
+	fn eq(&self, other: &MatchStatus) -> bool { (*self as int) == (*other as int) }
+}
+
 pub struct Match {
+
+	// status of match operation
+	status: MatchStatus,
 
 	// this is an owned copy for easy access to matching substrings
 	subject: ~str,
@@ -85,6 +121,6 @@ pub struct Match {
 	num_matches: uint,
 	
 	// the vector of substring indices is kept private
-	priv index_matches: ~[uint]
+	priv index_matches: ~[i32]
 }
 

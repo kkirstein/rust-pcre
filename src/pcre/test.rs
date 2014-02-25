@@ -59,6 +59,32 @@ fn test_new_match() {
 	fail!();
 }
 
+#[test]
+fn test_simple_match() {
+	use pcre::{Regex, Success};
+	use extra::enum_set::EnumSet;
+
+	let regex = Regex::new("cat", EnumSet::empty());
+	let subject = ~"dog and cat";
+	let mm = regex.exec(subject, 1);
+
+	assert_eq!(Success, mm.status);
+	assert_eq!(subject, mm.subject);
+}
+
+#[test]
+//fn test_simple_match_substring() {
+//	use pcre::{Regex, Match, Success};
+//	use extra::enum_set::EnumSet;
+//
+//	let regex = Regex::new("cat", EnumSet::empty());
+//	let subject = "dog and cat";
+//	let mm = regex.exec(subject, 1);
+//	let substring = mm.get_substring(1);
+//
+//	assert_eq!("cat", substring);
+//}
+
 // tests for low-level (raw) API
 // =============================
 
