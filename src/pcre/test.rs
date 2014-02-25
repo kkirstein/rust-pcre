@@ -73,17 +73,41 @@ fn test_simple_match() {
 }
 
 #[test]
-//fn test_simple_match_substring() {
-//	use pcre::{Regex, Match, Success};
-//	use extra::enum_set::EnumSet;
-//
-//	let regex = Regex::new("cat", EnumSet::empty());
-//	let subject = "dog and cat";
-//	let mm = regex.exec(subject, 1);
-//	let substring = mm.get_substring(1);
-//
-//	assert_eq!("cat", substring);
-//}
+fn test_simple_match_substring() {
+	use pcre::Regex;
+	use extra::enum_set::EnumSet;
+
+	let subject = "dog and cat";
+
+	let regex = Regex::new("cat", EnumSet::empty());
+	let mm = regex.exec(subject, 1);
+	let substring = mm.get_substring(0);
+
+	match substring {
+		None	=> fail!(),
+		Some(s)	=> assert_eq!(~"cat", s)
+	}
+}
+
+#[test]
+fn test_simple_match_all_substring() {
+	use pcre::Regex;
+	use extra::enum_set::EnumSet;
+
+	let subject = "00:06:08 TAG_1      id=   3,   320,     1,  -321,    11, TAG_END ";
+	let pattern = "TAG_1[\\s]+id=[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*TAG_END";
+
+	let regex = Regex::new(pattern, EnumSet::empty());
+	let mm = regex.exec(subject, 5);
+	//println!("Match: {:?}", mm);
+	let substrings = mm.get_all_substring();
+
+	assert_eq!(6, substrings.len());
+	let expected = ~[subject.slice(9, subject.len()-1), "3", "320", "1", "-321", "11"];
+	for i in range(0, 5) {
+		assert_eq!(expected[i].into_owned(), substrings[i].clone().into_owned());
+	}
+}
 
 // tests for low-level (raw) API
 // =============================

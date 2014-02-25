@@ -26,6 +26,7 @@ use extra::enum_set::{EnumSet, CLike};
 pub mod raw;
 
 // options for constructing regex
+// ==============================
 pub enum Flag {
 	NoFlag			= 0x0000,
 	CaseInsensitive = 0x0001,
@@ -48,6 +49,7 @@ impl CLike for Flag {
 }
 
 // basic struct for regex
+// ======================
 pub struct Regex(*raw::PcreCompiled, *raw::PcreExtra);
 
 // methods for Regex
@@ -88,6 +90,7 @@ impl Regex {
 }
 
 // struct for match results
+// ========================
 pub enum MatchStatus {
 	Success,
 	Nomatch,
@@ -110,5 +113,29 @@ pub struct Match {
 	
 	// the vector of substring indices is kept private
 	priv index_matches: ~[i32]
+}
+impl Match {
+	pub fn get_substring(&self, num: uint) -> Option<~str> {
+
+		// check index bounds
+		if (num > self.num_matches) {
+			return None
+		} else {
+			let (start, end) = (self.index_matches[2*num] as uint, self.index_matches[2*num+1] as uint);
+			Some(self.subject.slice(start, end).into_owned())
+		}
+	}
+
+	pub fn get_all_substring(&self) -> ~[~str] {
+		use std::vec;
+
+		let mut substrings: ~[~str] = vec::with_capacity(self.num_matches);
+		for i in range(0, self.num_matches) {
+			let (start, end) = (self.index_matches[2*i] as uint, self.index_matches[2*i+1] as uint);
+			substrings.push(self.subject.slice(start, end).into_owned());
+		}
+		
+		substrings
+	}
 }
 
