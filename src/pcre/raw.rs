@@ -183,9 +183,11 @@ pub fn get_substring(subject: &str, match_struct: &PcreMatch, match_number: uint
 }
 
 pub fn free_compiled(pcre: *PcreCompiled) -> () {
+	use std::libc::{c_void, free};
 	unsafe {
-		if is_not_null(pcre) {
-			pcre_free(pcre);
+		if (pcre_refcount(pcre as *PcreCompiled, -1) == 0) {
+			//pcre_free(pcre);
+			free(pcre as *c_void);
 		}
 	}
 }
@@ -280,9 +282,9 @@ extern {
 	//					  string_count: c_int, string_number: c_int, string_ptr: **c_char) -> (c_int);
 	//fn pcre_get_substring_list(subject: *c_char, ovector: *c_int,
 	//						   string_count: c_int, list_ptr: ***u8) -> (c_int); // first prio
-	//fn pcre_refcount(pcre: *PcreCompiled, adjust: c_int) -> (c_int);
+	fn pcre_refcount(pcre: *PcreCompiled, adjust: c_int) -> (c_int);
 	fn pcre_study(pcre: *PcreCompiled, options: c_int, error_str: **c_char) -> *PcreExtra; // first prio
-	fn pcre_free(pcre_comp: *PcreCompiled) -> ();
+	//fn pcre_free(pcre_comp: *mut PcreCompiled) -> ();
 	fn pcre_free_study(pcre_extra: *PcreExtra) -> ();
 	fn pcre_version() -> *c_char;
 

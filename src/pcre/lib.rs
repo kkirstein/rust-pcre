@@ -50,7 +50,10 @@ impl CLike for Flag {
 
 // basic struct for regex
 // ======================
-pub struct Regex(*raw::PcreCompiled, *raw::PcreExtra);
+pub struct Regex {
+	priv comp: *raw::PcreCompiled,
+	priv extra: *raw::PcreExtra
+}
 
 // methods for Regex
 impl Regex {
@@ -71,21 +74,38 @@ impl Regex {
 			::std::ptr::null()
 		};
 
-		Regex(comp, extra)
+		Regex { comp: comp, extra: extra }
 	}
 
 	// exec(&self) -> Match
 	pub fn exec(&self, subject: &str, match_count: uint) -> Match {
 
-		let &Regex(comp, extra) = self;
+		//let &Regex(comp, extra) = self;
 		
-		let res = raw::exec(comp, extra, subject, 0, raw::PCRE_NONE, match_count);
+		let res = raw::exec(self.comp, self.extra, subject, 0, raw::PCRE_NONE, match_count);
 		match res {
 			raw::Match(num, vec)		=> Match { status: Success, subject: subject.to_owned(), num_matches: num as uint, index_matches: vec },
 			raw::MoreMatches(_, vec)	=> Match { status: Success, subject: subject.to_owned(), num_matches: vec.len()/3, index_matches: vec },
 			raw::NoMatch				=> Match { status: Nomatch, subject: ~"", num_matches: 0u, index_matches: ~[] },
 			raw::Error(n)				=> Match { status: Error, subject: format!("Error code: {:i}", n), num_matches: 0u, index_matches: ~[] }
 		}
+	}
+}
+
+// implement unsafe destructor for underlying data objects
+#[unsafe_destructor]
+impl Drop for Regex {
+	fn drop(&mut self) {
+		use std::ptr;
+
+		//println!("Destructor Regex called for {:?}", *self);
+
+		raw::free_extra(self.extra);
+		self.extra = ptr::null();
+		raw::free_compiled(self.comp);
+		self.comp = ptr::null();
+
+		//println(" ..done!");
 	}
 }
 
