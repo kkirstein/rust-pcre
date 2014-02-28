@@ -147,10 +147,15 @@ impl Match {
 	}
 
 	pub fn get_all_substring(&self) -> ~[~str] {
+
+		self.get_all_substring_from(0)
+	}
+
+	pub fn get_all_substring_from(&self, from: uint) -> ~[~str] {
 		use std::vec;
 
 		let mut substrings: ~[~str] = vec::with_capacity(self.num_matches);
-		for i in range(0, self.num_matches) {
+		for i in range(from, self.num_matches) {
 			let (start, end) = (self.index_matches[2*i] as uint, self.index_matches[2*i+1] as uint);
 			substrings.push(self.subject.slice(start, end).into_owned());
 		}

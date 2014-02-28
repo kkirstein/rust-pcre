@@ -134,6 +134,26 @@ fn test_simple_match_all_substring() {
 	}
 }
 
+#[test]
+fn test_simple_match_all_substring_from() {
+	use pcre::Regex;
+	use extra::enum_set::EnumSet;
+
+	let subject = "00:06:08 TAG_1      id=   3,   320,     1,  -321,    11, TAG_END ";
+	let pattern = "TAG_1[\\s]+id=[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*TAG_END";
+
+	let regex = Regex::new(pattern, EnumSet::empty());
+	let mm = regex.exec(subject, 5);
+	//println!("Match: {:?}", mm);
+	let substrings = mm.get_all_substring_from(1);
+
+	assert_eq!(5, substrings.len());
+	let expected = ~["3", "320", "1", "-321", "11"];
+	for i in range(0, 5) {
+		assert_eq!(expected[i].into_owned(), substrings[i].clone().into_owned());
+	}
+}
+
 // tests for low-level (raw) API
 // =============================
 
