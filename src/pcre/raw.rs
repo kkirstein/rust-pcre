@@ -12,8 +12,8 @@
 
 use std::libc::{c_char, c_int};
 use std::str::raw::from_c_str;
-use std::ptr::is_not_null;
-use std::vec;
+//use std::ptr::is_not_null;
+use std::slice;
 
 // type definitions for pcre interface
 // ===================================
@@ -100,14 +100,15 @@ pub fn compile(pattern: &str, options: PcreOption) -> Option<*PcreCompiled> {
 											pattern.with_c_str( |pat| pcre_compile(pat, options as c_int, &buf, &mut error_offset, ::std::ptr::null()) ));
 
 		// check for error
-		if is_not_null(pcre_comp) {
+		if pcre_comp.is_not_null() {
 			Some(pcre_comp)
 		} else {
 			let error_msg = match error_str.as_str() {
 				Some(msg)	=> format!("Error at position {:d}: {:s}\n", error_offset, msg),
 				None		=> format!("Unknown error at position {:d}\n", error_offset)
 			};
-			println(error_msg);
+			// TODO: Return proper Result type with error struct
+			println!("{:s}", error_msg);
 			None
 		}
 	}
@@ -120,14 +121,15 @@ pub fn study(pcre_comp: *PcreCompiled, options: PcreStudyOption) -> Option<*Pcre
 											 pcre_study(pcre_comp, options as c_int, &buf) );
 
 		// check for error
-		if is_not_null(pcre_extra) {
+		if pcre_extra.is_not_null() {
 			Some(pcre_extra)
 		} else {
 			let error_msg = match error_str.as_str() {
 				Some(msg)	=> format!("Error: {:s}\n", msg),
 				None		=> ~"Unknown error!\n"
 			};
-			println(error_msg);
+			// TODO: Return proper Result type with error struct
+			println!("{:s}", error_msg);
 			None
 		}
 	}
@@ -139,7 +141,7 @@ pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, sta
 
 		// prepare offsets vector
 		let offset_count = 3 * (match_count+1);
-		let mut offsets: ~[i32] = vec::with_capacity(offset_count);
+		let mut offsets: ~[i32] = slice::with_capacity(offset_count);
 
 		// call pcre_exec
 		let result = subject.with_c_str( |sub| pcre_exec(pcre_comp, pcre_extra, sub, subject_len, start_offset as c_int, options as c_int, offsets.as_mut_ptr(), offset_count as c_int) );
@@ -187,14 +189,14 @@ pub fn free_compiled(pcre: *PcreCompiled) -> () {
 	unsafe {
 		if (pcre_refcount(pcre as *PcreCompiled, -1) == 0) {
 			//pcre_free(pcre);
-			free(pcre as *c_void);
+			free(pcre as *mut c_void);
 		}
 	}
 }
 
 pub fn free_extra(pcre: *PcreExtra) -> () {
 	unsafe {
-		if is_not_null(pcre) {
+		if pcre.is_not_null() {
 			pcre_free_study(pcre);
 		}
 	}

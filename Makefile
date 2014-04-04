@@ -13,7 +13,7 @@ pcre_lib = libpcre.a
 rustc = rustc
 outdirflag = --out-dir .
 clibdir = ./src/pcre/C
-rclibflags = --lib -O -L$(clibdir)
+rclibflags = -O -L$(clibdir)
 rcbinflags = -O -L.
 
 # define phony targets

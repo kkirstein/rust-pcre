@@ -8,19 +8,19 @@
 // Author: Kay-Uwe Kirstein
 //
 
-#[crate_id = "pcre#0.1"];
-#[crate_type = "dylib"];
-#[desc = "Rust bindings to PCRE regular expression library (http://www.pcre.org)"];
-#[license = "BSD"];
+#![crate_id = "pcre#0.1"]
+#![crate_type = "dylib"]
+#![desc = "Rust bindings to PCRE regular expression library (http://www.pcre.org)"]
+#![license = "BSD"]
 
-extern mod extra;
+extern crate collections;
 
-use extra::enum_set::{EnumSet, CLike};
+use collections::enum_set::{EnumSet, CLike};
 //use raw;
 //use std::libc::{c_void, c_char, c_int};
 //use std::str::raw::from_c_str;
 //use std::ptr::is_not_null;
-//use std::vec;
+use std::slice;
 
 // low-level functions and structs are the raw module
 pub mod raw;
@@ -111,15 +111,16 @@ impl Drop for Regex {
 
 // struct for match results
 // ========================
+#[deriving(Eq, Show)]
 pub enum MatchStatus {
 	Success,
 	Nomatch,
 	Error
 }
 // implement Eq trait for easy status comparison
-impl Eq for MatchStatus {
-	fn eq(&self, other: &MatchStatus) -> bool { (*self as int) == (*other as int) }
-}
+//impl Eq for MatchStatus {
+//	fn eq(&self, other: &MatchStatus) -> bool { (*self as int) == (*other as int) }
+//}
 
 pub struct Match {
 	// status of match operation
@@ -154,7 +155,7 @@ impl Match {
 	pub fn get_all_substring_from(&self, from: uint) -> ~[~str] {
 		use std::vec;
 
-		let mut substrings: ~[~str] = vec::with_capacity(self.num_matches);
+		let mut substrings: ~[~str] = slice::with_capacity(self.num_matches);
 		for i in range(from, self.num_matches) {
 			let (start, end) = (self.index_matches[2*i] as uint, self.index_matches[2*i+1] as uint);
 			substrings.push(self.subject.slice(start, end).into_owned());

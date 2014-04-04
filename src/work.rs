@@ -3,33 +3,33 @@
 //
 // vim: ft=rust sw=4 ts=4
 
-#[crate_id = "work"];
-#[crate_type = "bin"];
+#![crate_id = "work"]
+#![crate_type = "bin"]
 
 // reference external modules
-extern mod extra;
-extern mod pcre;
+extern crate time;
+extern crate pcre;
 
 // import names
-use extra::time::precise_time_ns;
+use time::precise_time_ns;
 
 // Main
 // ====
 fn main() {
-	println("Play with pcre bindings:");
+	println!("Play with pcre bindings:");
 	println!("Using pcre version: {:s}", ::pcre::raw::get_version());
 
 	let pattern = "Hello";
 	println!("Compiling an easy pattern ('{:s}'):", pattern);
 	let pcre_comp = ::pcre::raw::compile(pattern, pcre::raw::PCRE_NONE);
 	println!("{:?}", pcre_comp);
-	println("Studying that pattern:");
+	println!("Studying that pattern:");
 	let pcre_extra = match pcre_comp {
 		Some(pp)	=> ::pcre::raw::study(pp, ::pcre::raw::PCRE_STUDY_NONE),
 		None		=> None
 	};
 	println!("{:?}", pcre_extra);
-	println("");
+	println!("");
 
 	let subject = "Hello World!";
 	println!("Matching against '{:s}':", subject);
@@ -41,7 +41,7 @@ fn main() {
 	let toc1 = precise_time_ns();
 	let match_string = ::pcre::raw::get_substring(subject, &res1, 0);
 	println!("Match result: {:?}. Elapsed time {:u}us", match_string, (toc1-tic1)/1000);
-	println("");
+	println!("");
 	
 	// do the same again with JIT enabled
 	let pcre_jit = match pcre_comp {
@@ -57,7 +57,7 @@ fn main() {
 	let toc2 = precise_time_ns();
 	let match_string = ::pcre::raw::get_substring(subject, &res2, 0);
 	println!("Match result: {:?}. Elapsed time {:u}us", match_string, (toc2-tic2)/1000);
-	println("");
+	println!("");
 
 	// free resources
 	//match pcre_comp { Some(pc) => ::pcre::free_compiled(pc), None => {} };

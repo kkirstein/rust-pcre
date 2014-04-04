@@ -8,17 +8,17 @@
 // Author: Kay-Uwe Kirstein
 //
 
-#[license = "BSD"];
+#![license = "BSD"]
 
-extern mod extra;
-extern mod pcre;
+extern crate collections;
+extern crate pcre;
 
 // tests for high-level API
 // ========================
 #[test]
 fn test_new_flags() {
 	use pcre::{CaseInsensitive, Multiline, NoJIT, Flag};
-	use extra::enum_set::EnumSet;
+	use collections::enum_set::EnumSet;
 
 	let mut opts: EnumSet<Flag> = EnumSet::empty();
 	assert!(opts.is_empty());
@@ -38,7 +38,7 @@ fn test_new_flags() {
 #[ignore]
 fn test_new_regex() {
 	use pcre::{Flag, NoJIT, Regex};
-	use extra::enum_set::EnumSet;
+	use collections::enum_set::EnumSet;
 
 	let pat = "cat";
 	let regex = Regex::new(pat, EnumSet::empty());
@@ -69,7 +69,7 @@ fn test_new_match() {
 #[test]
 fn test_simple_match() {
 	use pcre::{Regex, Success};
-	use extra::enum_set::EnumSet;
+	use collections::enum_set::EnumSet;
 
 	let regex = Regex::new("cat", EnumSet::empty());
 	let subject = ~"dog and cat";
@@ -82,7 +82,7 @@ fn test_simple_match() {
 #[test]
 fn test_simple_match_substring() {
 	use pcre::Regex;
-	use extra::enum_set::EnumSet;
+	use collections::enum_set::EnumSet;
 
 	let subject = "dog and cat";
 
@@ -99,7 +99,7 @@ fn test_simple_match_substring() {
 #[test]
 fn test_simple_match_multi_substring() {
 	use pcre::Regex;
-	use extra::enum_set::EnumSet;
+	use collections::enum_set::EnumSet;
 
 	let subject = "00:06:08 TAG_1      id=   3,   320,     1,  -321,    11, TAG_END ";
 	let pattern = "TAG_1[\\s]+id=[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*TAG_END";
@@ -117,7 +117,7 @@ fn test_simple_match_multi_substring() {
 #[test]
 fn test_simple_match_all_substring() {
 	use pcre::Regex;
-	use extra::enum_set::EnumSet;
+	use collections::enum_set::EnumSet;
 
 	let subject = "00:06:08 TAG_1      id=   3,   320,     1,  -321,    11, TAG_END ";
 	let pattern = "TAG_1[\\s]+id=[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*TAG_END";
@@ -137,7 +137,7 @@ fn test_simple_match_all_substring() {
 #[test]
 fn test_simple_match_all_substring_from() {
 	use pcre::Regex;
-	use extra::enum_set::EnumSet;
+	use collections::enum_set::EnumSet;
 
 	let subject = "00:06:08 TAG_1      id=   3,   320,     1,  -321,    11, TAG_END ";
 	let pattern = "TAG_1[\\s]+id=[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*([-\\d]+),[\\s]*TAG_END";
