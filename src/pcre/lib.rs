@@ -65,7 +65,7 @@ impl Regex {
 			Some(c)	=> c,
 			None	=> ::std::ptr::null()
 		};
-		let extra = if (!options.contains_elem(NoJIT)) {
+		let extra = if !options.contains_elem(NoJIT) {
 			match raw::study(comp, raw::PCRE_STUDY_JIT_COMPILE) {
 				Some(e)	=> e,
 				None	=> ::std::ptr::null()
@@ -139,7 +139,7 @@ impl Match {
 	pub fn get_substring(&self, num: uint) -> Option<~str> {
 
 		// check index bounds
-		if (num > self.num_matches) {
+		if num > self.num_matches {
 			return None
 		} else {
 			let (start, end) = (self.index_matches[2*num] as uint, self.index_matches[2*num+1] as uint);
@@ -153,7 +153,6 @@ impl Match {
 	}
 
 	pub fn get_all_substring_from(&self, from: uint) -> ~[~str] {
-		use std::vec;
 
 		let mut substrings: ~[~str] = slice::with_capacity(self.num_matches);
 		for i in range(from, self.num_matches) {

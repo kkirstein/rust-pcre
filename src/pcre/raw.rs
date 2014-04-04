@@ -22,6 +22,7 @@ pub enum PcreExtra { } // opaque handle
 
 // option enums for pcre interface
 // ===============================
+#[allow(non_camel_case_types)]
 pub enum PcreOption {
 	PCRE_NONE				= 0x00000000,
 	PCRE_CASELESS           = 0x00000001,  /* C1       */
@@ -68,6 +69,7 @@ pub enum PcreOption {
 	PCRE_UCP                = 0x20000000  /* C3       */
 }
 
+#[allow(non_camel_case_types)]
 pub enum PcreStudyOption {
 	PCRE_STUDY_NONE							= 0x0000,
 	PCRE_STUDY_JIT_COMPILE					= 0x0001,
@@ -167,7 +169,7 @@ pub fn get_substring(subject: &str, match_struct: &PcreMatch, match_number: uint
 		&Match(n, _)				=> n as uint,
 		_							=> 0
 	};
-	let (start_index, end_index) = if (match_number > found_matches) {
+	let (start_index, end_index) = if match_number > found_matches {
 		(0, 0)
 	} else {
 		(2 * match_number, 2 * match_number + 1)
@@ -187,7 +189,7 @@ pub fn get_substring(subject: &str, match_struct: &PcreMatch, match_number: uint
 pub fn free_compiled(pcre: *PcreCompiled) -> () {
 	use std::libc::{c_void, free};
 	unsafe {
-		if (pcre_refcount(pcre as *PcreCompiled, -1) == 0) {
+		if pcre_refcount(pcre as *PcreCompiled, -1) == 0 {
 			//pcre_free(pcre);
 			free(pcre as *mut c_void);
 		}
