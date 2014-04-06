@@ -51,8 +51,8 @@ impl CLike for Flag {
 // basic struct for regex
 // ======================
 pub struct Regex {
-	priv comp: *raw::PcreCompiled,
-	priv extra: *raw::PcreExtra
+	comp: *raw::PcreCompiled,
+	extra: *raw::PcreExtra
 }
 
 // methods for Regex
@@ -124,16 +124,16 @@ pub enum MatchStatus {
 
 pub struct Match {
 	// status of match operation
-	status: MatchStatus,
+	pub status: MatchStatus,
 
 	// this is an owned copy for easy access to matching substrings
-	subject: ~str,
+	pub subject: ~str,
 
 	// the number of matched groups
-	num_matches: uint,
+	pub num_matches: uint,
 	
 	// the vector of substring indices is kept private
-	priv index_matches: ~[i32]
+	index_matches: ~[i32]
 }
 impl Match {
 	pub fn get_substring(&self, num: uint) -> Option<~str> {
