@@ -126,7 +126,7 @@ pub struct Match {
 	pub subject: ~str,
 
 	// the number of matched groups
-	num_matches: uint,
+	pub num_matches: uint,
 	
 	// the vector of substring indices is kept private
 	index_matches: Vec<i32>
