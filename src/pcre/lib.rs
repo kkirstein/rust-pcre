@@ -8,19 +8,15 @@
 // Author: Kay-Uwe Kirstein
 //
 
-#![crate_id = "pcre#0.1"]
+#![crate_id = "pcre#0.2"]
 #![crate_type = "dylib"]
 #![desc = "Rust bindings to PCRE regular expression library (http://www.pcre.org)"]
 #![license = "BSD"]
 
 extern crate collections;
+extern crate libc;
 
 use collections::enum_set::{EnumSet, CLike};
-//use raw;
-//use std::libc::{c_void, c_char, c_int};
-//use std::str::raw::from_c_str;
-//use std::ptr::is_not_null;
-use std::slice;
 
 // low-level functions and structs are the raw module
 pub mod raw;
@@ -51,8 +47,8 @@ impl CLike for Flag {
 // basic struct for regex
 // ======================
 pub struct Regex {
-	priv comp: *raw::PcreCompiled,
-	priv extra: *raw::PcreExtra
+	comp: *raw::PcreCompiled,
+	extra: *raw::PcreExtra
 }
 
 // methods for Regex
@@ -86,8 +82,8 @@ impl Regex {
 		match res {
 			raw::Match(num, vec)		=> Match { status: Success, subject: subject.to_owned(), num_matches: num as uint, index_matches: vec },
 			raw::MoreMatches(_, vec)	=> Match { status: Success, subject: subject.to_owned(), num_matches: vec.len()/3, index_matches: vec },
-			raw::NoMatch				=> Match { status: Nomatch, subject: ~"", num_matches: 0u, index_matches: ~[] },
-			raw::Error(n)				=> Match { status: Error, subject: format!("Error code: {:i}", n), num_matches: 0u, index_matches: ~[] }
+			raw::NoMatch				=> Match { status: Nomatch, subject: ~"", num_matches: 0u, index_matches: vec![] },
+			raw::Error(n)				=> Match { status: Error, subject: format!("Error code: {:i}", n), num_matches: 0u, index_matches: vec![] }
 		}
 	}
 }
@@ -124,16 +120,16 @@ pub enum MatchStatus {
 
 pub struct Match {
 	// status of match operation
-	status: MatchStatus,
+	pub status: MatchStatus,
 
 	// this is an owned copy for easy access to matching substrings
-	subject: ~str,
+	pub subject: ~str,
 
 	// the number of matched groups
 	num_matches: uint,
 	
 	// the vector of substring indices is kept private
-	priv index_matches: ~[i32]
+	index_matches: Vec<i32>
 }
 impl Match {
 	pub fn get_substring(&self, num: uint) -> Option<~str> {
@@ -142,21 +138,21 @@ impl Match {
 		if num > self.num_matches {
 			return None
 		} else {
-			let (start, end) = (self.index_matches[2*num] as uint, self.index_matches[2*num+1] as uint);
+			let (start, end) = (*self.index_matches.get(2*num) as uint, *self.index_matches.get(2*num+1) as uint);
 			Some(self.subject.slice(start, end).into_owned())
 		}
 	}
 
-	pub fn get_all_substring(&self) -> ~[~str] {
+	pub fn get_all_substring(&self) -> Vec<~str> {
 
 		self.get_all_substring_from(0)
 	}
 
-	pub fn get_all_substring_from(&self, from: uint) -> ~[~str] {
+	pub fn get_all_substring_from(&self, from: uint) -> Vec<~str> {
 
-		let mut substrings: ~[~str] = slice::with_capacity(self.num_matches);
+		let mut substrings: Vec<~str> = Vec::with_capacity(self.num_matches);
 		for i in range(from, self.num_matches) {
-			let (start, end) = (self.index_matches[2*i] as uint, self.index_matches[2*i+1] as uint);
+			let (start, end) = (*self.index_matches.get(2*i) as uint, *self.index_matches.get(2*i+1) as uint);
 			substrings.push(self.subject.slice(start, end).into_owned());
 		}
 		

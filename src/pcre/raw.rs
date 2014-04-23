@@ -9,11 +9,10 @@
 //
 
 //#[allow(dead_code)];
+//extern crate libc;
 
-use std::libc::{c_char, c_int};
+use libc::{c_char, c_int};
 use std::str::raw::from_c_str;
-//use std::ptr::is_not_null;
-use std::slice;
 
 // type definitions for pcre interface
 // ===================================
@@ -80,9 +79,9 @@ pub enum PcreStudyOption {
 
 pub enum PcreMatch {
 	NoMatch,
-	MoreMatches(i32, ~[i32]),
+	MoreMatches(i32, Vec<i32>),
 	Error(i32),
-	Match(i32, ~[i32])
+	Match(i32, Vec<i32>)
 }
 
 // public API
@@ -143,7 +142,7 @@ pub fn exec(pcre_comp: *PcreCompiled, pcre_extra: *PcreExtra, subject: &str, sta
 
 		// prepare offsets vector
 		let offset_count = 3 * (match_count+1);
-		let mut offsets: ~[i32] = slice::with_capacity(offset_count);
+		let mut offsets: Vec<i32> = Vec::with_capacity(offset_count);
 
 		// call pcre_exec
 		let result = subject.with_c_str( |sub| pcre_exec(pcre_comp, pcre_extra, sub, subject_len, start_offset as c_int, options as c_int, offsets.as_mut_ptr(), offset_count as c_int) );
@@ -178,8 +177,8 @@ pub fn get_substring(subject: &str, match_struct: &PcreMatch, match_number: uint
 	// extract substring indices
 	match match_struct {
 		&Match(_, ref offsets) | &MoreMatches(_, ref offsets)	=> {
-			let start: uint = offsets[start_index] as uint;
-			let end: uint = offsets[end_index] as uint;
+			let start: uint = *offsets.get(start_index) as uint;
+			let end: uint = *offsets.get(end_index) as uint;
 			Some(subject.slice(start, end).to_owned())
 		},
 		_						=> None
@@ -187,7 +186,7 @@ pub fn get_substring(subject: &str, match_struct: &PcreMatch, match_number: uint
 }
 
 pub fn free_compiled(pcre: *PcreCompiled) -> () {
-	use std::libc::{c_void, free};
+	use libc::{c_void, free};
 	unsafe {
 		if pcre_refcount(pcre as *PcreCompiled, -1) == 0 {
 			//pcre_free(pcre);

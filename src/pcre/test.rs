@@ -108,8 +108,8 @@ fn test_simple_match_multi_substring() {
 	let mm = regex.exec(subject, 5);
 
 	let expected = ~[subject.slice(9, subject.len()-1), "3", "320", "1", "-321", "11"];
-	for i in range(0, 5) {
-		let substring = match mm.get_substring(i as uint) { Some(s) => s, None => fail!() };
+	for i in range::<uint>(0, 5) {
+		let substring = match mm.get_substring(i) { Some(s) => s, None => fail!() };
 		assert_eq!(expected[i].into_owned(), substring.into_owned());
 	}
 }
@@ -129,8 +129,8 @@ fn test_simple_match_all_substring() {
 
 	assert_eq!(6, substrings.len());
 	let expected = ~[subject.slice(9, subject.len()-1), "3", "320", "1", "-321", "11"];
-	for i in range(0, 5) {
-		assert_eq!(expected[i].into_owned(), substrings[i].clone().into_owned());
+	for i in range::<uint>(0, 5) {
+		assert_eq!(expected[i].into_owned(), substrings.get(i).clone().into_owned());
 	}
 }
 
@@ -149,8 +149,8 @@ fn test_simple_match_all_substring_from() {
 
 	assert_eq!(5, substrings.len());
 	let expected = ~["3", "320", "1", "-321", "11"];
-	for i in range(0, 5) {
-		assert_eq!(expected[i].into_owned(), substrings[i].clone().into_owned());
+	for i in range::<uint>(0, 5) {
+		assert_eq!(expected[i].into_owned(), substrings.get(i).clone().into_owned());
 	}
 }
 
@@ -231,8 +231,8 @@ fn test_raw_match_groups() {
 	
 	// check substrings
 	let substrings = ~[subject.slice(9, subject.len()-1), "3", "320", "1", "-321", "11"];
-	for i in range(0, 5) {
-		match get_substring(subject, &mm, i as uint) {
+	for i in range::<uint>(0, 5) {
+		match get_substring(subject, &mm, i ) {
 			Some(s)	=> assert_eq!(substrings[i].into_owned(), s),
 			None	=> fail!()
 		}
@@ -310,8 +310,8 @@ fn test_raw_jit_match_groups() {
 	
 	// check substrings
 	let substrings = ~[subject.slice(9, subject.len()-1), "3", "320", "1", "-321", "11"];
-	for i in range(0, 5) {
-		match get_substring(subject, &mm, i as uint) {
+	for i in range::<uint>(0, 5) {
+		match get_substring(subject, &mm, i) {
 			Some(s)	=> assert_eq!(substrings[i].into_owned(), s),
 			None	=> fail!()
 		}
