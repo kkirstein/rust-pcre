@@ -11,6 +11,8 @@ For easy deployment, the build Rust library is self-contained, meaning it includ
 
 ## Status
 
+_With rust 1.0 there is a regular expression crate part of its standard set of libraries [regex](https://crates.io/crates/regex), so these bindings are not forther developed._
+
 Currently, only basic functionality of PCRE is supported, like compiling regular expressions, applying them to strings and extract matched substrings. For a more complete binding, you might consider more mature versions like [this one](https://github.com/cadencemarseille/rust-pcre).
 
 This project includes pcre-8.33 and was successfully build on **Windows7 (with MinGW/MSYS)** and Ubuntu 13.10 with **Rust 0.11-pre** (Ubuntu still to be tested with 0.11-pre..).
