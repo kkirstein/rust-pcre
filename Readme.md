@@ -1,6 +1,6 @@
 # RUST-PCRE
 
-Just another pcre-binding for the Rust programming language.
+_With rust 1.0 there is a regular expression crate part of its standard set of libraries: [regex](https://crates.io/crates/regex). So these bindings are not forther developed._
 
 ## Motivation
 
@@ -10,8 +10,6 @@ I started this project as a toy to get familar with the Rust programming languag
 For easy deployment, the build Rust library is self-contained, meaning it includes the PCRE code, which is build from the respective C-code as static lib and linked to the Rust lib.
 
 ## Status
-
-_With rust 1.0 there is a regular expression crate part of its standard set of libraries [regex](https://crates.io/crates/regex), so these bindings are not forther developed._
 
 Currently, only basic functionality of PCRE is supported, like compiling regular expressions, applying them to strings and extract matched substrings. For a more complete binding, you might consider more mature versions like [this one](https://github.com/cadencemarseille/rust-pcre).
 
